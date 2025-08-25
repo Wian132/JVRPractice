@@ -1,3 +1,5 @@
+/* File: app/globals.css */
+
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 @import "tailwindcss";
 
@@ -17,10 +19,15 @@
   }
 }
 
-/* FIX: This is the correct way to prevent horizontal scrollbars site-wide */
-html, body {
+/* Make iOS toolbars & PWAs behave and prevent horizontal scrollbars */
+html, body, #__next {
+  height: 100%;
   width: 100%;
+}
+
+html, body {
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -29,22 +36,34 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* New class for the vintage, serif heading */
+/* Nice serif display */
 .font-serif-display {
   font-family: 'Playfair Display', serif;
 }
 
-/* Keyframes for the slow zoom effect */
+/* Slow zoom background effect (used on the paper texture section) */
 @keyframes slow-zoom {
-  0% {
-    background-size: 100% 100%;
-  }
-  100% {
-    background-size: 110% 110%;
-  }
+  0% { background-size: 100% 100%; }
+  100% { background-size: 110% 110%; }
 }
-
-/* Animation class to apply the zoom effect */
 .bg-slow-zoom {
   animation: slow-zoom 40s infinite alternate ease-in-out;
+}
+
+/* iOS Safari improvements for momentum scrolling when we use overflow containers */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optional utility if you want to apply safe viewport min-heights elsewhere */
+.min-h-screen-safe {
+  min-height: 100svh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .bg-fixed {
+    background-attachment: scroll !important;
+  }
 }
