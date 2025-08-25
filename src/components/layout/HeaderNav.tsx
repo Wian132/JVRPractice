@@ -2,22 +2,27 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { usePathname } from 'next/navigation'; // Import usePathname
 import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 const HeaderNav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname(); // Get the current page's path
 
-  // UX Enhancement: Smooth scroll handler
+  // UX Enhancement: Smooth scroll handler for anchor links
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
     e.preventDefault();
+    if (href === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (isOpen) setIsOpen(false);
+        return;
+    }
     const targetId = href.replace(/.*#/, "");
     const elem = document.getElementById(targetId);
     elem?.scrollIntoView({
       behavior: 'smooth',
     });
-    // Close mobile menu on click
     if (isOpen) {
       setIsOpen(false);
     }
@@ -28,43 +33,93 @@ const HeaderNav = () => {
     { name: 'Contact Us', href: '#contact' },
     { name: 'Specialities', href: '#specialities' },
     { name: 'About', href: '#about' },
+    { name: 'Privacy Policy', href: '/privacy-policy' },
   ];
 
-  const bgColor = 'bg-[#F5F5DC]/90';
   const textColor = 'text-[#5C4033]';
   const hoverColor = 'hover:text-[#8B4513]';
 
+  // This function determines the correct link destination and behavior
+  const renderLink = (link: { name: string, href: string }, isMobile = false) => {
+    const isHomePage = pathname === '/';
+    const isPageLink = link.href.startsWith('/');
+    const isHashLink = link.href.startsWith('#');
+
+    const mobileClasses = `block py-3 text-2xl ${textColor} ${hoverColor}`;
+    const desktopClasses = `relative group ${textColor} ${hoverColor} transition-colors text-2xl`;
+    const currentClasses = isMobile ? mobileClasses : desktopClasses;
+
+    // For internal page links like /privacy-policy
+    if (isPageLink) {
+      return (
+        <Link href={link.href} passHref>
+          <span onClick={() => isOpen && setIsOpen(false)} className={currentClasses}>
+            {link.name}
+            {!isMobile && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#8B4513] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></span>}
+          </span>
+        </Link>
+      );
+    }
+    
+    // For hash links like #contact
+    if (isHashLink) {
+        // If we are on the homepage, use the smooth scroll handler
+        if (isHomePage) {
+            return (
+                <a 
+                    href={link.href} 
+                    onClick={(e) => handleScroll(e, link.href)}
+                    className={currentClasses}
+                >
+                    {link.name}
+                    {!isMobile && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#8B4513] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></span>}
+                </a>
+            );
+        }
+        // If we are NOT on the homepage, create a link that goes back to the homepage first
+        return (
+            <Link href={`/${link.href}`} passHref>
+                <span onClick={() => isOpen && setIsOpen(false)} className={currentClasses}>
+                    {link.name}
+                    {!isMobile && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#8B4513] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></span>}
+                </span>
+            </Link>
+        );
+    }
+
+    // Fallback for any other type of link
+    return (
+      <a href={link.href} className={currentClasses}>
+        {link.name}
+        {!isMobile && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#8B4513] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></span>}
+      </a>
+    );
+  };
+
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 font-serif ${bgColor} backdrop-blur-sm shadow-md border-b-2 border-[#D2B48C]/50`}>
+    <header 
+      className={`sticky top-0 z-50 w-full font-serif shadow-md border-b-2 border-[#D2B48C]/50 bg-cover bg-center`}
+      style={{ backgroundImage: "url('/background/paper_texture.jpg')" }}
+    >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-28">
-          <Link href="/" className="flex items-center gap-2" onClick={(e) => handleScroll(e, '/')}>
-            <Image
-              src="/logos/logo1.png"
-              alt="JVR Practice Logo"
-              width={64}
-              height={64}
-              className="h-16 w-16"
-            />
-            <span className={`text-4xl lg:text-5xl ${textColor}`}>
+        <div className="relative flex items-center justify-between md:justify-end h-28">
+          
+          <Link href="/" className="md:absolute md:left-[35%] md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2" onClick={(e) => handleScroll(e, '/')}>
+            <span className={`text-3xl md:text-4xl lg:text-5xl ${textColor} text-center`}>
               Dr. <span className="font-bold">Johan</span> Van Rooyen
             </span>
           </Link>
           
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <a 
-                key={link.name} 
-                href={link.href} 
-                onClick={(e) => handleScroll(e, link.href)}
-                className={`relative group ${textColor} ${hoverColor} transition-colors text-2xl`}
-              >
-                {link.name}
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#8B4513] scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out"></span>
-              </a>
+              <React.Fragment key={link.name}>
+                {renderLink(link)}
+              </React.Fragment>
             ))}
           </nav>
 
+          {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu" aria-expanded={isOpen}>
               {isOpen ? <X className={`h-8 w-8 ${textColor}`} /> : <Menu className={`h-8 w-8 ${textColor}`} />}
@@ -73,17 +128,19 @@ const HeaderNav = () => {
         </div>
       </div>
 
+      {/* Mobile Navigation Menu */}
       {isOpen && (
         <motion.nav 
-          className={`md:hidden ${bgColor} px-4 pt-2 pb-4 space-y-2`}
+          className={`md:hidden px-4 pt-2 pb-4 space-y-2 bg-cover bg-center border-t-2 border-[#D2B48C]/50`}
+          style={{ backgroundImage: "url('/background/paper_texture.jpg')" }}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
         >
           {navLinks.map((link) => (
-            <a key={link.name} href={link.href} onClick={(e) => handleScroll(e, link.href)} className={`block py-3 text-2xl ${textColor} ${hoverColor}`}>
-                {link.name}
-            </a>
+             <React.Fragment key={link.name}>
+                {renderLink(link, true)}
+            </React.Fragment>
           ))}
         </motion.nav>
       )}

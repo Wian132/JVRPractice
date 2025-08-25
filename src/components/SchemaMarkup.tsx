@@ -9,7 +9,20 @@ const SchemaMarkup = () => {
     "image": "https://www.jvrpractice.com/images/pfp.webp",
     "url": "https://www.jvrpractice.com/",
     "telephone": "+27137457836",
-    "priceRange": "$$$",
+    // FIX: Replaced 'priceRange' with a more specific 'makesOffer' for SEO
+    "makesOffer": {
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Service",
+        "name": "Orthopedic Consultation"
+      },
+      "priceSpecification": {
+        "@type": "PriceSpecification",
+        "price": "550",
+        "priceCurrency": "ZAR",
+        "unitText": "HOUR"
+      }
+    },
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Suite 207, Medical Centre, Mediclinic Nelspruit, 1 Louise St, Sonheuwel",

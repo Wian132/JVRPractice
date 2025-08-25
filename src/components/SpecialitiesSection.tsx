@@ -8,7 +8,7 @@ import PulsingMaterial from "@/components/PulsingMaterial";
 import AnatomyInfoCard from "@/components/AnatomyInfoCard";
 import { useIsMobile } from "@/app/hooks/use-mobile";
 
-const TYPE_ORDER = ["Shoulder", "Elbow", "Hip", "Knee"] as const;
+const TYPE_ORDER = ["Shoulder", "Elbow", "Hip", "Knee", "Ankle"] as const;
 type TypeKey = typeof TYPE_ORDER[number];
 
 function getTypeFromPart(p: AnatomyPart): TypeKey | null {
@@ -91,9 +91,9 @@ export default function SpecialitiesSection() {
   return (
     <section id="specialities" aria-labelledby="specialities-heading" className="relative w-full bg-[#f5f5dc] overflow-x-hidden py-12 md:py-16">
       
-      <div className="px-4 text-center sm:px-6 md:text-left lg:px-8">
+      <div className="px-4 text-center sm:px-6 lg:px-8">
         <h3 id="specialities-heading" className="font-serif-display text-4xl font-bold text-[#3a2e20] md:text-5xl">My Specialities</h3>
-        <p className="max-w-2xl text-[#5c4b3a] italic mx-auto md:mx-0">Click on an interactive point to explore my areas of focus.</p>
+        <p className="max-w-2xl text-[#5c4b3a] italic mx-auto">Click on an interactive point to explore my areas of focus.</p>
       </div>
 
       <div className="w-full flex flex-col md:flex-row gap-6 md:gap-8 items-stretch mt-6 px-4 sm:px-6 lg:px-8">

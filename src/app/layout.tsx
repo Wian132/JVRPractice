@@ -1,3 +1,6 @@
+// File: src/app/layout.tsx (Updated)
+// Description: Added the CookieConsentBanner component.
+
 import type { Metadata } from "next";
 import { Inter, EB_Garamond } from "next/font/google";
 import "./globals.css";
@@ -5,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import HeaderNav from "@/components/layout/HeaderNav";
 import Footer from "@/components/layout/Footer";
 import SchemaMarkup from "@/components/SchemaMarkup";
+import CookieConsentBanner from "@/components/layout/CookieConsentBanner"; // Import the new component
 
 const inter = Inter({ subsets: ["latin"] });
 const garamond = EB_Garamond({ 
@@ -13,7 +17,6 @@ const garamond = EB_Garamond({
   variable: '--font-garamond' 
 });
 
-// SEO Enhancement: More descriptive metadata
 export const metadata: Metadata = {
   title: "JVR Practice | Dr. Johan Van Rooyen - Orthopedic Surgeon in Nelspruit",
   description: "Dr. Johan Van Rooyen's Orthopedic Practice in Nelspruit, specializing in joint replacement, arthroscopy, and trauma. Providing comprehensive orthopedic care.",
@@ -28,7 +31,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${garamond.variable}`}>
       <head>
-        {/* SEO Enhancement: Add Schema Markup */}
         <SchemaMarkup />
       </head>
       <body className={inter.className}>
@@ -36,6 +38,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <Toaster />
+        <CookieConsentBanner /> {/* Add the banner here */}
       </body>
     </html>
   );

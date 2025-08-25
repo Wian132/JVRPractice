@@ -1,5 +1,5 @@
 // File: app/page.tsx (Corrected)
-// Description: The main page, with SEO, UX, and animation enhancements.
+// Description: The main page, with highlighted specialities in the 'About' section.
 "use client";
 
 import Image from 'next/image';
@@ -7,23 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import React, { useState, useEffect, FormEvent } from 'react';
+import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import SpecialitiesSection from '@/components/SpecialitiesSection';
 import Link from 'next/link';
 import { Phone, Stethoscope } from 'lucide-react';
-
-// --- MOCK summarizeTestimonials function ---
-const summarizeTestimonials = async ({ testimonials }: { testimonials: string[] }): Promise<{ summary: string } | null> => {
-  console.log("Summarizing testimonials:", testimonials);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  if (testimonials && testimonials.length > 0) {
-    return { summary: `Patients consistently praise Dr. Van Rooyen for being an excellent, skilled, and compassionate orthopedic surgeon who takes time to listen and explain treatment options. His extensive experience and commitment to patient care are highly respected.` };
-  }
-  return null;
-};
-// --- END MOCK FUNCTION ---
 
 const testimonialsData = [
     { name: "Skim", image: "https://picsum.photos/id/111/100/100", text: "After a highly successful knee replacement in '23 and the repair of a shattered left wrist, now short... to the helpful practice ladies and Dr. Van Rooyen, you are... \"Simply the Best!\"" },
@@ -37,35 +26,20 @@ const testimonialVariants: Variants = { hiddenLeft: { opacity: 0, x: -100 }, hid
 
 
 export default function Home() {
-  const [summary, setSummary] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-  const [currentTime, setCurrentTime] = useState('');
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', reason: '', });
-  const [formErrors, setFormErrors] = useState({ name: '', email: '', phone: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [summary] = React.useState<string | null>(`Patients consistently praise Dr. Van Rooyen for being an excellent, skilled, and compassionate orthopedic surgeon who takes time to listen and explain treatment options. His extensive experience and commitment to patient care are highly respected.`);
+  const [isClient, setIsClient] = React.useState(false);
+  const [currentTime, setCurrentTime] = React.useState('');
+  const [formData, setFormData] = React.useState({ name: '', email: '', phone: '', reason: '', });
+  const [formErrors, setFormErrors] = React.useState({ name: '', email: '', phone: '' });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setIsClient(true);
 
     setCurrentTime(new Date().toLocaleTimeString('en-ZA', {
         timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit'
     }));
-
-    const summarize = async () => {
-        if (testimonialsData && Array.isArray(testimonialsData)) {
-          try {
-            const result = await summarizeTestimonials({ testimonials: testimonialsData.map(t => t.text) });
-            setSummary(result?.summary || "Failed to load summary.");
-          } catch (error) {
-            console.error("Error summarizing testimonials:", error);
-            setSummary("Error loading summary.");
-          }
-        } else {
-          setSummary("No testimonials available.");
-        }
-    };
-    summarize();
   }, []);
 
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "jvrpractice@gmail.com";
@@ -100,7 +74,7 @@ export default function Home() {
     return isValid;
   };
 
-  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!validateForm()) {
         return;
@@ -121,8 +95,7 @@ export default function Home() {
         } else {
           setSubmitStatus({ message: result.message || 'An error occurred. Please try again.', type: 'error' });
         }
-      } catch (error) {
-        console.error("Form submission fetch error:", error);
+      } catch {
         setSubmitStatus({ message: 'An unexpected network error occurred.', type: 'error' });
       } finally {
         setIsSubmitting(false);
@@ -130,12 +103,11 @@ export default function Home() {
   };
 
   return (
-    // FIX: Removed 'overflow-x-hidden' from the main element
     <main>
       {/* Hero Section */}
       <section
-        className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url('/images/nature/sunset.png')` }}
+        className="relative min-h-screen flex items-center justify-center bg-cover bg-fixed md:bg-center"
+        style={{ backgroundImage: `url('/images/nature/sunset.webp')`, backgroundPosition: '75% 50%' }}
         aria-labelledby="hero-heading"
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -166,7 +138,7 @@ export default function Home() {
               transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
             >
               <Link href="#contact" passHref>
-                <Button 
+                <Button
                     className="font-serif bg-[#F5F5DC] text-[#5C4033] hover:bg-[#EAE0C8] text-2xl font-bold py-8 px-16 rounded-sm border-2 border-[#D2B48C] shadow-lg transition-transform transform hover:scale-105"
                     aria-label="Contact Us"
                 >
@@ -181,7 +153,7 @@ export default function Home() {
               transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
             >
                <Link href="#specialities" passHref>
-                <Button 
+                <Button
                   className="font-serif bg-[#F5F5DC] text-[#5C4033] hover:bg-[#EAE0C8] text-2xl font-bold py-8 px-16 rounded-sm border-2 border-[#D2B48C] shadow-lg transition-transform transform hover:scale-105"
                   aria-label="View Our Specialities"
                 >
@@ -195,9 +167,9 @@ export default function Home() {
       </section>
 
       {/* Map Section */}
-      <section 
-        id="map-location" 
-        aria-labelledby="map-heading" 
+      <section
+        id="map-location"
+        aria-labelledby="map-heading"
         className="py-16 md:py-20 bg-cover bg-center bg-slow-zoom"
         style={{ backgroundImage: `url('/background/paper_texture.jpg')` }}
       >
@@ -221,7 +193,7 @@ export default function Home() {
               >
               {isClient && (
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1800.6762826878783!2d30.960974002794934!3d-25.493285699999987!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ee84a471a5398a5%3A0x5b4c4591654d1125!2sUnit%20104%2C%20Sonheuwel%20consulting%20rooms%2C%201%20Louise%20St%2C%20Sonheuwel%2C%20Mbombela%2C%201201!5e0!3m2!1saf!2sza!4v1744482087215!5m2!1saf!2sza"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3601.344666792661!2d30.95931917510759!3d-25.493549235408647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ee84b23115c0ad9%3A0x1d4ff4e2a0904a58!2sMediclinic%20Nelspruit%20Hospital%20%26%20Day%20Clinic!5e0!3m2!1saf!2sza!4v1756128825524!5m2!1saf!2sza"
                     width="100%"
                     height="450"
                     style={{ border: 0 }}
@@ -238,7 +210,8 @@ export default function Home() {
       </section>
 
       {/* Contact Us Section */}
-       <section id="contact" aria-labelledby="contact-heading" className="py-16 md:py-20 bg-cover bg-center bg-fixed relative overflow-hidden" style={{ backgroundImage: `url('/images/nature/lions.jpg')` }}>
+       <section id="contact" aria-labelledby="contact-heading" className="py-16 md:py-20 bg-cover bg-fixed relative overflow-hidden md:bg-center"
+       style={{ backgroundImage: `url('/images/nature/lions.webp')`, backgroundPosition: '75% 50%' }}>
         <div className="absolute inset-0 bg-black opacity-60"></div>
         <div className="container mx-auto px-4 relative z-10">
           <h2 id="contact-heading" className="text-3xl md:text-4xl font-semibold text-center mb-10 md:mb-12 text-white">Contact Us</h2>
@@ -297,9 +270,9 @@ export default function Home() {
                       <Textarea id="reason" name="reason" placeholder="e.g., Knee pain, follow-up consultation..." className="bg-white/80 border-gray-400 text-black placeholder:text-black/70" value={formData.reason} onChange={handleInputChange} disabled={isSubmitting} rows={4} />
                     </div>
 
-                    <Button 
-                      type="submit" 
-                      disabled={isSubmitting} 
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
                       aria-live="polite"
                       className="bg-white/90 text-black hover:bg-white shadow-md border border-gray-400 mt-2"
                     >
@@ -330,17 +303,23 @@ export default function Home() {
         <div className="absolute inset-0 bg-black opacity-60 z-0"></div>
          <div className="container mx-auto px-4 relative z-10">
           <h2 id="about-heading" className="text-3xl md:text-4xl font-semibold text-center mb-10 md:mb-12 text-white">About The Practice & Patient Experiences</h2>
-           
+
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            
+
             <Card className="bg-[#F5F5DC]/90 backdrop-blur-sm shadow-xl h-full flex flex-col">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl text-gray-900">General Orthopedic Surgeon</CardTitle>
                 <CardDescription className="text-gray-700">Dedicated to providing exceptional orthopedic care in Nelspruit.</CardDescription>
               </CardHeader>
-              <CardContent className="text-center text-gray-800 flex-grow">
-                <p className="mb-4">Dr. Johan Van Rooyen provides comprehensive care for a wide range of orthopedic conditions affecting the limbs, specializing in joint replacement, arthroscopy, and trauma.</p>
-                <p>Located conveniently at Mediclinic Nelspruit.</p>
+              <CardContent className="text-center text-gray-800 flex-grow flex flex-col items-center justify-center p-6">
+                <h4 className="text-xl font-semibold text-[#5C4033] mb-4 font-serif">Specializing In:</h4>
+                <ul className="space-y-2 text-lg">
+                    <li>Joint Replacement</li>
+                    <li>Shoulder Arthroscopy</li>
+                    <li>Limb and Trauma Reconstruction</li>
+                    <li>Ankle and Lower Limb Pathology</li>
+                </ul>
+                <p className="mt-6 text-base">Surgeries performed at Nelspruit Mediclinic and Lowveld Busamed hospitals.</p>
               </CardContent>
             </Card>
 
@@ -356,9 +335,9 @@ export default function Home() {
                 </Card>
             )}
            </div>
-           
+
            <h3 id="testimonials" className="text-3xl md:text-4xl font-semibold text-center mt-16 mb-10 md:mb-12 text-white">Patient Testimonials</h3>
-           
+
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
              {testimonialsData.map((testimonial, index) => (
                <motion.div

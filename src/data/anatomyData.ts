@@ -35,4 +35,8 @@ export const anatomyData: AnatomyPart[] = [
     // --- Knee Hotspots ---
     { name: 'left_knee', title: 'Knee', description: 'Lower limb reconstruction', image: '/anatomy-focus/knee.jpg', bodyPosition: [-1.5, -1.75, 0.2], manTargetRotation: [0, Math.PI / 7, 0] },
     { name: 'right_knee', title: 'Knee', description: 'Lower limb reconstruction', image: '/anatomy-focus/knee.jpg', bodyPosition: [1.5, -1.75, 0.2], manTargetRotation: [0, -Math.PI / 7, 0] },
+
+    // --- Ankle Hotspots ---
+    { name: 'left_ankle', title: 'Ankle', description: 'Ankle injuries and reconstruction', image: '/anatomy-focus/ankle.webp', bodyPosition: [-2.4, -3.5, 0.2], manTargetRotation: [0, Math.PI / 7, 0] },
+    { name: 'right_ankle', title: 'Ankle', description: 'Ankle injuries and reconstruction', image: '/anatomy-focus/ankle.webp', bodyPosition: [2.2, -3.5, 0.2], manTargetRotation: [0, -Math.PI / 7, 0] },
 ];
