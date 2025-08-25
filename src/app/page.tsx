@@ -228,7 +228,7 @@ export default function Home() {
       <section
         id="contact"
         aria-labelledby="contact-heading"
-        className="py-16 md:py-20 bg-cover bg-fixed relative overflow-hidden md:bg-center scroll-mt-24 md:scroll-mt-32"
+        className="pt-16 pb-24 md:pt-20 md:pb-28 bg-cover bg-fixed relative overflow-hidden md:bg-center scroll-mt-24 md:scroll-mt-32"
         style={{ backgroundImage: `url('/images/nature/lions.webp')`, backgroundPosition: '75% 50%' }}
       >
         <div className="absolute inset-0 bg-black opacity-60"></div>

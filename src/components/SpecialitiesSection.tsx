@@ -96,7 +96,7 @@ function AnatomyModel({
             onPointerOver={() => (document.body.style.cursor = "pointer")}
             onPointerOut={() => (document.body.style.cursor = "auto")}
           >
-            <sphereGeometry args={[0.2, 16, 16]} />
+            <sphereGeometry args={[0.4, 16, 16]} />
             <PulsingMaterial isActive={idx === activeTypeIndex} />
           </mesh>
         );
