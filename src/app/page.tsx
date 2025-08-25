@@ -142,7 +142,7 @@ export default function Home() {
           <p className="text-lg sm:text-xl lg:text-2xl text-gray-200">MBChB (Pret) | MMed Orth (Pret) | FC Orth (SA)</p>
           <p className="text-base sm:text-lg lg:text-xl text-gray-300 mt-2 mb-12">Years of dedication in restoring mobility</p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
             <motion.div
               initial={{ opacity: 0, x: -100 }}
               animate={{ opacity: 1, x: 0 }}
