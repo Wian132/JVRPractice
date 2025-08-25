@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* === FIX: Prevents double scrollbars site-wide (More Aggressive) === */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* New class for the vintage, serif heading */
+.font-serif-display {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Keyframes for the slow zoom effect */
+@keyframes slow-zoom {
+  0% {
+    background-size: 100% 100%;
+  }
+  100% {
+    background-size: 110% 110%;
+  }
+}
+
+/* Animation class to apply the zoom effect */
+.bg-slow-zoom {
+  animation: slow-zoom 40s infinite alternate ease-in-out;
+}
