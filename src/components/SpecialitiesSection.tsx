@@ -1,5 +1,10 @@
-import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+// File: src/components/SpecialitiesSection.tsx
+// Purpose: Robust 3D model mounting with GLTF preloading, safe cloning, and WebGL context-loss recovery.
+
+"use client";
+
+import React, { Suspense, useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Loader } from "@react-three/drei";
 import { Group, Quaternion, Euler } from "three";
 import { motion } from "framer-motion";
@@ -7,6 +12,17 @@ import { anatomyData, AnatomyPart } from "@/data/anatomyData";
 import PulsingMaterial from "@/components/PulsingMaterial";
 import AnatomyInfoCard from "@/components/AnatomyInfoCard";
 import { useIsMobile } from "@/app/hooks/use-mobile";
+
+// --- Key stability upgrades ---
+// 1) Preload the GLB once so it’s cached before render.
+// 2) Clone the loaded scene before mounting it to avoid reusing disposed nodes.
+// 3) Listen for WebGL context loss and force-remount the <Canvas> if it happens.
+// 4) Remove preserveDrawingBuffer (can cause issues on some devices) and clamp DPR.
+
+const GLB_URL =
+  "https://qchrbfnndntd6b8r.public.blob.vercel-storage.com/Remake-compressed.glb";
+
+useGLTF.preload(GLB_URL);
 
 const TYPE_ORDER = ["Shoulder", "Elbow", "Hip", "Knee", "Ankle"] as const;
 type TypeKey = typeof TYPE_ORDER[number];
@@ -17,33 +33,69 @@ function getTypeFromPart(p: AnatomyPart): TypeKey | null {
   return null;
 }
 
-function AnatomyModel({ activeTypeIndex, onTypeHotspotClick, targetParts, scale, position }: {
+function ContextLossGuard({ onLost }: { onLost: () => void }) {
+  const { gl } = useThree();
+  useEffect(() => {
+    const el = gl.domElement;
+    const handler = (e: Event) => {
+      // Prevent default so the browser doesn't try to auto-handle (which usually means "dead canvas")
+      e.preventDefault();
+      onLost();
+    };
+    el.addEventListener("webglcontextlost", handler as EventListener, { passive: false });
+    return () => el.removeEventListener("webglcontextlost", handler as EventListener);
+  }, [gl, onLost]);
+  return null;
+}
+
+function AnatomyModel({
+  activeTypeIndex,
+  onTypeHotspotClick,
+  targetParts,
+  scale,
+  position,
+}: {
   activeTypeIndex: number;
   onTypeHotspotClick: (typeIndex: number) => void;
   targetParts: AnatomyPart[];
   scale: number;
   position: [number, number, number];
 }) {
-  const { scene } = useGLTF("https://qchrbfnndntd6b8r.public.blob.vercel-storage.com/Remake-compressed.glb");
+  const { scene } = useGLTF(GLB_URL);
+
+  // Clone the scene so each mount has its own instance (avoids reusing a disposed graph).
+  const clonedScene = useMemo(() => scene.clone(true), [scene]);
+
   const groupRef = useRef<Group>(null!);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
     const active = targetParts[activeTypeIndex] || targetParts[0];
     const targetRotation = active.manTargetRotation;
-    const targetQuaternion = new Quaternion().setFromEuler(new Euler(...targetRotation, "YXZ"));
+    const targetQuaternion = new Quaternion().setFromEuler(
+      new Euler(...targetRotation, "YXZ")
+    );
     groupRef.current.quaternion.slerp(targetQuaternion, Math.min(1, delta * 3));
   });
 
   return (
     <group ref={groupRef} position={position}>
-      <primitive object={scene} scale={scale} />
+      <primitive object={clonedScene} scale={scale} />
       {anatomyData.map((part, i) => {
         const t = getTypeFromPart(part);
         if (!t) return null;
         const idx = TYPE_ORDER.indexOf(t);
         return (
-          <mesh key={i} position={part.bodyPosition} onClick={(e) => { e.stopPropagation(); onTypeHotspotClick(idx); }} onPointerOver={() => (document.body.style.cursor = "pointer")} onPointerOut={() => (document.body.style.cursor = "auto")}>
+          <mesh
+            key={i}
+            position={part.bodyPosition}
+            onClick={(e) => {
+              e.stopPropagation();
+              onTypeHotspotClick(idx);
+            }}
+            onPointerOver={() => (document.body.style.cursor = "pointer")}
+            onPointerOut={() => (document.body.style.cursor = "auto")}
+          >
             <sphereGeometry args={[0.2, 16, 16]} />
             <PulsingMaterial isActive={idx === activeTypeIndex} />
           </mesh>
@@ -56,7 +108,10 @@ function AnatomyModel({ activeTypeIndex, onTypeHotspotClick, targetParts, scale,
 export default function SpecialitiesSection() {
   const displayParts = useMemo(() => {
     const pick: Partial<Record<TypeKey, AnatomyPart>> = {};
-    for (const t of TYPE_ORDER) pick[t] = anatomyData.find((p) => getTypeFromPart(p) === t) as AnatomyPart | undefined;
+    for (const t of TYPE_ORDER)
+      pick[t] = anatomyData.find((p) => getTypeFromPart(p) === t) as
+        | AnatomyPart
+        | undefined;
     return TYPE_ORDER.map((t) => pick[t]!).filter(Boolean);
   }, []);
 
@@ -64,6 +119,12 @@ export default function SpecialitiesSection() {
   const [modelScale, setModelScale] = useState(3.2);
   const [modelPos, setModelPos] = useState<[number, number, number]>([1.25, -1.7, 0]);
   const isMobile = useIsMobile();
+
+  // Force a hard remount of <Canvas> by changing this key when we detect context loss.
+  const [canvasKey, setCanvasKey] = useState(0);
+  const handleContextLost = useCallback(() => {
+    setCanvasKey((k) => k + 1);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,39 +138,63 @@ export default function SpecialitiesSection() {
   }, []);
 
   const sortedDisplayParts = useMemo(() => {
-    if (!isMobile) {
-      return displayParts;
-    }
+    if (!isMobile) return displayParts;
     const activePart = displayParts[activeTypeIndex];
-    if (!activePart) {
-      return displayParts;
-    }
+    if (!activePart) return displayParts;
     const otherParts = displayParts.filter((_, idx) => idx !== activeTypeIndex);
     return [activePart, ...otherParts];
   }, [isMobile, activeTypeIndex, displayParts]);
 
   return (
-    <section id="specialities" aria-labelledby="specialities-heading" className="relative w-full bg-[#f5f5dc] overflow-x-hidden py-12 md:py-16">
-      
+    <section
+      id="specialities"
+      aria-labelledby="specialities-heading"
+      className="relative w-full bg-[#f5f5dc] overflow-x-hidden py-12 md:py-16"
+    >
       <div className="px-4 text-center sm:px-6 lg:px-8">
-        <h3 id="specialities-heading" className="font-serif-display text-4xl font-bold text-[#3a2e20] md:text-5xl">My Specialities</h3>
-        <p className="max-w-2xl text-[#5c4b3a] italic mx-auto">Click on an interactive point to explore my areas of focus.</p>
+        <h3
+          id="specialities-heading"
+          className="font-serif-display text-4xl font-bold text-[#3a2e20] md:text-5xl"
+        >
+          My Specialities
+        </h3>
+        <p className="max-w-2xl text-[#5c4b3a] italic mx-auto">
+          Click on an interactive point to explore my areas of focus.
+        </p>
       </div>
 
       <div className="w-full flex flex-col md:flex-row gap-6 md:gap-8 items-stretch mt-6 px-4 sm:px-6 lg:px-8">
-        
-        <div 
+        <div
           className="relative w-full md:w-[70%] h-[50vh] md:h-[85vh] max-h-[800px] bg-cover bg-no-repeat bg-center"
           style={{ backgroundImage: "url('/vitruvian_background.png')" }}
         >
           <div className="absolute inset-0 p-5">
-            {/* FIX: Added gl={{ preserveDrawingBuffer: true }}
-              This tells the browser to keep the WebGL context alive even when the canvas is not visible.
+            {/* IMPORTANT:
+                - Removed preserveDrawingBuffer (can cause context issues).
+                - Added DPR clamp and context loss guard with hard remount.
             */}
-            <Canvas camera={{ position: [0, 0, 12], fov: 50 }} gl={{ alpha: true, preserveDrawingBuffer: true }}>
+            <Canvas
+              key={canvasKey}
+              camera={{ position: [0, 0, 12], fov: 50 }}
+              dpr={[1, 2]}
+              gl={{ antialias: true, powerPreference: "high-performance" }}
+            >
+              <ContextLossGuard onLost={handleContextLost} />
               <ambientLight intensity={1.6} />
-              <spotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={1.75} castShadow />
-              <Suspense fallback={null}>
+              <spotLight
+                position={[10, 15, 10]}
+                angle={0.3}
+                penumbra={1}
+                intensity={1.75}
+                castShadow
+              />
+              <Suspense
+                fallback={
+                  <mesh>
+                    <meshBasicMaterial />
+                  </mesh>
+                }
+              >
                 <AnatomyModel
                   activeTypeIndex={activeTypeIndex}
                   onTypeHotspotClick={setActiveTypeIndex}
@@ -118,15 +203,16 @@ export default function SpecialitiesSection() {
                   position={modelPos}
                 />
               </Suspense>
-              <OrbitControls 
-                enableZoom={false} 
-                enablePan={false} 
-                enableRotate 
-                minDistance={5} 
+              <OrbitControls
+                enableZoom={false}
+                enablePan={false}
+                enableRotate
+                minDistance={5}
                 maxDistance={15}
-                target={[0, -1, 0]} 
+                target={[0, -1, 0]}
               />
             </Canvas>
+            {/* Global loader overlay (kept) */}
             <Loader />
           </div>
         </div>
@@ -134,15 +220,19 @@ export default function SpecialitiesSection() {
         <aside className="relative w-full md:w-[30%] flex flex-col h-auto">
           <div className="flex-grow flex flex-col gap-4" aria-label="Speciality cards">
             {sortedDisplayParts.map((part) => {
-              const originalIndex = displayParts.findIndex(p => p.name === part.name);
+              const originalIndex = displayParts.findIndex((p) => p.name === part.name);
               const isActive = originalIndex === activeTypeIndex;
               return (
-                <motion.div 
+                <motion.div
                   key={part.name}
-                  layout 
+                  layout
                   transition={{ type: "spring", stiffness: 320, damping: 28 }}
                 >
-                  <AnatomyInfoCard speciality={part} isActive={isActive} onActivate={() => setActiveTypeIndex(originalIndex)} />
+                  <AnatomyInfoCard
+                    speciality={part}
+                    isActive={isActive}
+                    onActivate={() => setActiveTypeIndex(originalIndex)}
+                  />
                 </motion.div>
               );
             })}
