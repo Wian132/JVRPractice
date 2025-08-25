@@ -12,7 +12,7 @@ import { motion, Variants } from 'framer-motion';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import SpecialitiesSection from '@/components/SpecialitiesSection';
 import Link from 'next/link';
-import { Phone, Stethoscope } from 'lucide-react'; // Visual Enhancement: Import icons
+import { Phone, Stethoscope } from 'lucide-react';
 
 // --- MOCK summarizeTestimonials function ---
 const summarizeTestimonials = async ({ testimonials }: { testimonials: string[] }): Promise<{ summary: string } | null> => {
@@ -79,7 +79,6 @@ export default function Home() {
   };
 
   const validateForm = () => {
-    // FIX: Changed 'let' to 'const' as 'errors' is not reassigned
     const errors = { name: '', email: '', phone: '' };
     let isValid = true;
     if (!formData.name.trim()) {
@@ -131,7 +130,8 @@ export default function Home() {
   };
 
   return (
-    <main className="overflow-x-hidden">
+    // FIX: Removed 'overflow-x-hidden' from the main element
+    <main>
       {/* Hero Section */}
       <section
         className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-fixed"
@@ -351,7 +351,6 @@ export default function Home() {
                         <CardDescription className="text-gray-700">A summary of patient feedback.</CardDescription>
                     </CardHeader>
                     <CardContent className="text-center text-gray-800 italic text-lg flex-grow flex items-center justify-center">
-                        {/* FIX: Removed unescaped quotes */}
                         <p>{summary}</p>
                     </CardContent>
                 </Card>
@@ -380,7 +379,6 @@ export default function Home() {
                      <CardTitle className="text-2xl text-gray-900">{testimonial.name}</CardTitle>
                    </CardHeader>
                    <CardContent className="flex-grow p-6 pt-0">
-                     {/* FIX: Removed unescaped quotes */}
                      <blockquote className="text-gray-700 italic text-lg">
                         <p>{testimonial.text}</p>
                      </blockquote>
