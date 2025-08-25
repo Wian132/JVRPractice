@@ -17,7 +17,7 @@
   }
 }
 
-/* === FIX: Prevents double scrollbars site-wide (More Aggressive) === */
+/* FIX: This is the correct way to prevent horizontal scrollbars site-wide */
 html, body {
   width: 100%;
   overflow-x: hidden;

@@ -1,6 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-// FIX: Import the 'Html' and 'Loader' components
 import { useGLTF, OrbitControls, Loader } from "@react-three/drei";
 import { Group, Quaternion, Euler } from "three";
 import { motion } from "framer-motion";
@@ -25,7 +24,6 @@ function AnatomyModel({ activeTypeIndex, onTypeHotspotClick, targetParts, scale,
   scale: number;
   position: [number, number, number];
 }) {
-  // FIX: Load the compressed model from the Vercel Blob URL
   const { scene } = useGLTF("https://qchrbfnndntd6b8r.public.blob.vercel-storage.com/Remake-compressed.glb");
   const groupRef = useRef<Group>(null!);
 
@@ -105,7 +103,10 @@ export default function SpecialitiesSection() {
           style={{ backgroundImage: "url('/vitruvian_background.png')" }}
         >
           <div className="absolute inset-0 p-5">
-            <Canvas camera={{ position: [0, 0, 12], fov: 50 }} gl={{ alpha: true }}>
+            {/* FIX: Added gl={{ preserveDrawingBuffer: true }}
+              This tells the browser to keep the WebGL context alive even when the canvas is not visible.
+            */}
+            <Canvas camera={{ position: [0, 0, 12], fov: 50 }} gl={{ alpha: true, preserveDrawingBuffer: true }}>
               <ambientLight intensity={1.6} />
               <spotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={1.75} castShadow />
               <Suspense fallback={null}>
@@ -126,7 +127,6 @@ export default function SpecialitiesSection() {
                 target={[0, -1, 0]} 
               />
             </Canvas>
-            {/* FIX: Add the Drei Loader for a better UX */}
             <Loader />
           </div>
         </div>
