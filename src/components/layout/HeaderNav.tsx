@@ -2,31 +2,13 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; // Import usePathname
+import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 const HeaderNav = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname(); // Get the current page's path
-
-  // UX Enhancement: Smooth scroll handler for anchor links
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
-    e.preventDefault();
-    if (href === '/') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        if (isOpen) setIsOpen(false);
-        return;
-    }
-    const targetId = href.replace(/.*#/, "");
-    const elem = document.getElementById(targetId);
-    elem?.scrollIntoView({
-      behavior: 'smooth',
-    });
-    if (isOpen) {
-      setIsOpen(false);
-    }
-  };
+  const pathname = usePathname();
 
   const navLinks = [
     { name: 'Find Us', href: '#map-location' },
@@ -63,12 +45,13 @@ const HeaderNav = () => {
     
     // For hash links like #contact
     if (isHashLink) {
-        // If we are on the homepage, use the smooth scroll handler
+        // If we are on the homepage, use a standard <a> tag.
+        // The browser will handle the scrolling, and our CSS will handle the offset.
         if (isHomePage) {
             return (
                 <a 
                     href={link.href} 
-                    onClick={(e) => handleScroll(e, link.href)}
+                    onClick={() => isOpen && setIsOpen(false)} // Just close the menu on click
                     className={currentClasses}
                 >
                     {link.name}
@@ -98,13 +81,15 @@ const HeaderNav = () => {
 
   return (
     <header 
+      // The ID is no longer needed for the scroll handler
       className={`sticky top-0 z-50 w-full font-serif shadow-md border-b-2 border-[#D2B48C]/50 bg-cover bg-center`}
       style={{ backgroundImage: "url('/background/paper_texture.jpg')" }}
     >
       <div className="container mx-auto px-4">
         <div className="relative flex items-center justify-between md:justify-end h-28">
           
-          <Link href="/" className="md:absolute md:left-[35%] md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2" onClick={(e) => handleScroll(e, '/')}>
+          {/* Removed the complex onClick handler */}
+          <Link href="/" className="md:absolute md:left-[35%] md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
             <span className={`text-3xl md:text-4xl lg:text-5xl ${textColor} text-center`}>
               Dr. <span className="font-bold">Johan</span> Van Rooyen
             </span>

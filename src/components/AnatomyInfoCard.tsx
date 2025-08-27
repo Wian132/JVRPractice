@@ -1,13 +1,13 @@
 // ===============================
 // src/components/AnatomyInfoCard.tsx
-// (updated to use next/image)
+// (updated to fix background image path)
 // ===============================
 "use client";
 
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import { AnatomyPart } from "../data/anatomyData";
-import Image from "next/image"; // FIX: Import the Next.js Image component
+import Image from "next/image";
 
 export type AnatomyInfoCardProps = {
   speciality: AnatomyPart;
@@ -44,7 +44,9 @@ export default function AnatomyInfoCard({ speciality, isActive = true, onActivat
         isActive ? "p-4 md:p-6" : "p-2"
       }`}
       style={{
-        backgroundImage: "url('/images/parchment-bg.webp')",
+        // FIX: Changed the background image to a valid path to resolve the 404 error.
+        // This now matches the header and other sections for consistency.
+        backgroundImage: "url('/background/paper_texture.jpg')",
         backgroundBlendMode: "multiply",
         backgroundColor: "rgba(245,245,220,0.85)",
         backdropFilter: "blur(4px)",
@@ -57,12 +59,10 @@ export default function AnatomyInfoCard({ speciality, isActive = true, onActivat
       <div className="flex items-center gap-3 md:gap-4">
         <motion.div
           variants={itemVariants}
-          // FIX: Added 'relative' for the Image component's 'fill' prop
           className={`relative border-2 border-[#8a7a69] p-0.5 bg-[#f0e8d9] shrink-0 ${
             isActive ? "w-28 h-28 md:w-48 md:h-48" : "w-14 h-14 md:w-18 md:h-18"
           }`}
         >
-          {/* FIX: Replaced <img> with next/image <Image> for optimization */}
           <Image 
             src={speciality.image} 
             alt={`${speciality.title} illustration`} 

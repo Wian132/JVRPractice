@@ -1,0 +1,15 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <!-- This defines a circular shape that we will use as a mask -->
+  <defs>
+    <clipPath id="circleClip">
+      <circle cx="50" cy="50" r="50" />
+    </clipPath>
+  </defs>
+  
+  <!-- This group applies the circular mask to whatever is inside it -->
+  <g clip-path="url(#circleClip)">
+    <!-- This links to your existing logo image -->
+    <!-- Make sure you have a high-quality version of your logo named 'favicon.png' in the 'public' folder -->
+    <image href="/favicon.png" x="0" y="0" width="100" height="100" />
+  </g>
+</svg>
