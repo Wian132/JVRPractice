@@ -1,11 +1,12 @@
 // File: src/app/privacy-policy/page.tsx
-// Description: The privacy policy page for the JVR Practice website.
+// Description: Updated the page title for better branding.
 
 import { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | JVR Practice",
+  // SEO Change: Made the title more descriptive.
+  title: "Privacy Policy | Dr. Johan Van Rooyen Orthopaedic Practice",
   description: "Privacy Policy for the medical practice of Dr. Johan Van Rooyen, Orthopedic Surgeon in Nelspruit.",
   robots: "noindex, follow", // Good practice to noindex privacy policies
 };
@@ -54,7 +55,7 @@ export default function PrivacyPolicyPage() {
 
           <h2 className="font-serif-display text-2xl md:text-3xl font-bold mt-8 mb-4">Security of Your Information</h2>
           <p className="mb-6">
-            We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.
+            We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any any interception or other type of misuse.
           </p>
 
           <h2 className="font-serif-display text-2xl md:text-3xl font-bold mt-8 mb-4">Policy for Children</h2>

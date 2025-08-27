@@ -1,5 +1,5 @@
 // File: app/page.tsx
-// Description: Main page with mobile-safe header spacing for the hero image + anchor offset tweaks.
+// Description: Added vertical padding to the hero section content to prevent overlap on smaller screens.
 
 "use client";
 
@@ -117,13 +117,14 @@ export default function Home() {
     <main>
       {/* Hero Section */}
       <section
-        className="relative min-h-screen flex items-center justify-center bg-cover bg-fixed md:bg-center pt-24 sm:pt-28 md:pt-0"
+        className="relative min-h-screen flex items-center justify-center bg-cover bg-fixed md:bg-center pt-28 md:pt-0"
         style={{ backgroundImage: `url('/images/nature/sunset.webp')`, backgroundPosition: '75% 50%' }}
         aria-labelledby="hero-heading"
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
+        {/* Layout Fix: Added py-12 to ensure vertical spacing on all screen sizes */}
         <motion.div
-          className="relative z-10 flex flex-col items-center text-center px-4"
+          className="relative z-10 flex flex-col items-center text-center px-4 py-12"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
@@ -138,11 +139,14 @@ export default function Home() {
               priority
             />
           </div>
-          <h1 id="hero-heading" className="mt-8 text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-4">JVR Practice</h1>
+          {/* SEO Change: Added keywords to H1 for search engines, visually hidden with sr-only class */}
+          <h1 id="hero-heading" className="mt-8 text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-4">
+            JVR Practice<span className="sr-only">: Orthopaedic Surgeon in Nelspruit</span>
+          </h1>
           <p className="text-lg sm:text-xl lg:text-2xl text-gray-200">MBChB (Pret) | MMed Orth (Pret) | FC Orth (SA)</p>
           <p className="text-base sm:text-lg lg:text-xl text-gray-300 mt-2 mb-12">Years of dedication in restoring mobility</p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <motion.div
               initial={{ opacity: 0, x: -100 }}
               animate={{ opacity: 1, x: 0 }}
@@ -443,7 +447,8 @@ export default function Home() {
                 <Card className="bg-[#F5F5DC]/90 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-shadow h-full flex flex-col">
                   <CardHeader className="flex flex-row items-center gap-4 p-6">
                     <Avatar>
-                      <AvatarImage src={testimonial.image} alt={`Avatar of ${testimonial.name}`} />
+                      {/* SEO Change: Made alt text more descriptive for better accessibility and context. */}
+                      <AvatarImage src={testimonial.image} alt={`Testimonial from ${testimonial.name}, a patient of Dr. Johan Van Rooyen`} />
                       <AvatarFallback>{testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                     </Avatar>
                     <CardTitle className="text-2xl text-gray-900">{testimonial.name}</CardTitle>
