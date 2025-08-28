@@ -1,5 +1,5 @@
 // File: app/page.tsx
-// Description: Added vertical padding to the hero section content to prevent overlap on smaller screens.
+// Description: Added hyperlinks to the practice address for improved user experience and SEO.
 
 "use client";
 
@@ -55,6 +55,7 @@ export default function Home() {
   }, []);
 
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "jvrpractice@gmail.com";
+  const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Mediclinic+Nelspruit+1+Louise+St+Mbombela";
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -196,7 +197,9 @@ export default function Home() {
               <div className="w-24 h-px bg-[#D2B48C] mx-auto mb-8"></div>
               <p className="text-lg mb-10">
                 When you enter the Mediclinic gate, the first building on your left on the 2nd floor is where my practice is located. <br />
-                Suite 207, Medical Centre, Mediclinic Nelspruit, 1 Louise St, Sonheuwel, Mbombela, 1201.
+                <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-[#8B4513] transition-colors">
+                  Suite 207, Medical Centre, Mediclinic Nelspruit, 1 Louise St, Sonheuwel, Mbombela, 1201.
+                </a>
               </p>
             </div>
             <motion.div
@@ -253,7 +256,12 @@ export default function Home() {
                   <CardDescription className="text-gray-600">Reach out for appointments or inquiries.</CardDescription>
                 </CardHeader>
                 <CardContent className="text-gray-700 space-y-3">
-                  <p><strong>Address:</strong><br /> Suite 207, Medical Centre,<br /> Mediclinic Nelspruit,<br /> 1 Louise St, Sonheuwel,<br /> Mbombela, 1201</p>
+                  <p>
+                    <strong>Address:</strong><br />
+                    <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      Suite 207, Medical Centre,<br /> Mediclinic Nelspruit,<br /> 1 Louise St, Sonheuwel,<br /> Mbombela, 1201
+                    </a>
+                  </p>
                   <p><strong>Phone:</strong> <a href="tel:0137457836" className="text-blue-600 hover:underline">013 745 7836</a></p>
                   <p><strong>Email:</strong> <a href={`mailto:${contactEmail}`} className="text-blue-600 hover:underline">{contactEmail}</a></p>
                   <p><strong>Hours:</strong></p>
@@ -412,7 +420,27 @@ export default function Home() {
                   <li>Limb and Trauma Reconstruction</li>
                   <li>Ankle and Lower Limb Pathology</li>
                 </ul>
-                <p className="mt-6 text-base">Surgeries performed at Nelspruit Mediclinic and Lowveld Busamed hospitals.</p>
+                <p className="mt-6 text-base">
+                  Surgeries performed at{" "}
+                  <a
+                    href="https://www.mediclinic.co.za/en/nelspruit/home.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-[#8B4513] transition-colors"
+                  >
+                    Nelspruit Mediclinic
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="https://busamed.co.za/hospitals/lowveld-private-hospital/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-[#8B4513] transition-colors"
+                  >
+                    Lowveld Busamed
+                  </a>{" "}
+                  hospitals.
+                </p>
               </CardContent>
             </Card>
 
