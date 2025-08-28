@@ -1,6 +1,6 @@
 // ===============================
 // src/components/AnatomyInfoCard.tsx
-// (updated to fix background image path)
+// (updated to fix background image path and darken text)
 // ===============================
 "use client";
 
@@ -33,6 +33,9 @@ const itemVariants: Variants = {
 export default function AnatomyInfoCard({ speciality, isActive = true, onActivate }: AnatomyInfoCardProps) {
   if (!speciality) return null;
 
+  // Split description into points for list formatting
+  const descriptionPoints = speciality.description.split('\n');
+
   return (
     <motion.div
       layout
@@ -44,8 +47,6 @@ export default function AnatomyInfoCard({ speciality, isActive = true, onActivat
         isActive ? "p-4 md:p-6" : "p-2"
       }`}
       style={{
-        // FIX: Changed the background image to a valid path to resolve the 404 error.
-        // This now matches the header and other sections for consistency.
         backgroundImage: "url('/background/paper_texture.jpg')",
         backgroundBlendMode: "multiply",
         backgroundColor: "rgba(245,245,220,0.85)",
@@ -63,12 +64,12 @@ export default function AnatomyInfoCard({ speciality, isActive = true, onActivat
             isActive ? "w-28 h-28 md:w-48 md:h-48" : "w-14 h-14 md:w-18 md:h-18"
           }`}
         >
-          <Image 
-            src={speciality.image} 
-            alt={`${speciality.title} illustration`} 
+          <Image
+            src={speciality.image}
+            alt={`${speciality.title} illustration`}
             fill
             sizes="(max-width: 768px) 112px, 192px"
-            className={`object-cover ${isActive ? "sepia-[.5]" : "sepia"}`} 
+            className={`object-cover ${isActive ? "sepia-[.5]" : "sepia"}`}
           />
         </motion.div>
 
@@ -84,11 +85,19 @@ export default function AnatomyInfoCard({ speciality, isActive = true, onActivat
           </motion.h4>
 
           {isActive ? (
-            <motion.p variants={itemVariants} className="mt-1 md:mt-2 text-sm md:text-base text-[#5c4b3a]">
-              {speciality.description}
-            </motion.p>
+            descriptionPoints.length > 1 ? (
+              <motion.ul variants={itemVariants} className="mt-1 md:mt-2 text-sm md:text-base text-[#33281e] list-disc list-inside space-y-1">
+                {descriptionPoints.map((point, index) => (
+                  <li key={index}>{point}</li>
+                ))}
+              </motion.ul>
+            ) : (
+              <motion.p variants={itemVariants} className="mt-1 md:mt-2 text-sm md:text-base text-[#33281e]">
+                {speciality.description}
+              </motion.p>
+            )
           ) : (
-            <motion.p variants={itemVariants} className="text-sm md:text-base text-[#5c4b3a]/80 line-clamp-1">
+            <motion.p variants={itemVariants} className="text-sm md:text-base text-[#4d3d2e] line-clamp-1">
               Tap to view more
             </motion.p>
           )}
